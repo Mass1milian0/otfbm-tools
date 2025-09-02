@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex flex-col items-center justify-center w-full h-screen">
-      <div class="w-3/4 border border-slate-700 rounded-lg p-4 m-4 flex items-center flex-col">
+      <div class="w-3/4 lg:w-1/6 border border-slate-700 rounded-lg p-4 m-4 flex items-center flex-col">
         <h2 class="text-lg font-semibold mb-2">OTFBM TOOLS</h2>
         <div class="flex my-2 w-56">
           <UInput v-model="decode" placeholder="load your OTFBM Link"
@@ -15,28 +15,31 @@
             <div class="flex flex-col items-center">
               <p>Grid Size</p>
               <div class="flex">
-                <UInput placeholder="Width" class="w-28" />
+                <UInput v-model="generateNewOptions.width" placeholder="Width" class="w-10" />
                 x
-                <UInput placeholder="Height" class="w-28" />
+                <UInput v-model="generateNewOptions.height" placeholder="Height" class="w-10" />
               </div>
               <p class="mt-2">Background Image URL (optional)</p>
-              <UInput placeholder="Image URL" />
+              <UInput v-model="generateNewOptions.bgImage" placeholder="Image URL" />
               <div class="flex items-center space-x-2 mt-2">
                 <p>Dark Mode</p>
-                <UCheckbox />
+                <UCheckbox v-model="generateNewOptions.darkMode" />
               </div>
               <UAccordion :items="items" class="w-52 border-2 rounded-2xl border-slate-700 px-2 mb-2">
                 <template #body="{ item }">
                   <p>Grid Transparency</p>
-                  <UInput placeholder="Transparency" />
-                  <p>Grid Border Opacity</p>
-                  <UInput placeholder="Border Opacity" />
+                  <UInput v-model="generateNewOptions.transparency" placeholder="Transparency" />
                   <p>Grid Zoom Level</p>
-                  <UInput placeholder="Zoom Level" />
+                  <UInput v-model="generateNewOptions.zoomLevel" placeholder="Zoom Level" />
                   <p>Grid Cell Size (px)</p>
-                  <UInput placeholder="Cell Size" />
+                  <UInput v-model="generateNewOptions.cellSizePx" placeholder="Cell Size" />
+                  <div class="flex justify-center-center gap-2 mt-2">
+                    <p>Map Border Opacity</p>
+                    <UCheckbox v-model="generateNewOptions.borderOpacity" />
+                  </div>
                 </template>
               </UAccordion>
+              <UButton @click="generateNewMap" class="w-52 mb-2 flex justify-center">Generate Map</UButton>
             </div>
           </template>
         </UModal>
@@ -47,6 +50,7 @@
 
 <script lang="ts" setup>
 import type { AccordionItem } from '@nuxt/ui'
+const mapOptions = useMapStore();
 const items: AccordionItem[] = [
   {
     label: "Advanced Options",
@@ -54,6 +58,30 @@ const items: AccordionItem[] = [
   }
 ]
 let decode = ref("");
+let generateNewOptions = ref({
+  width: 0,
+  height: 0,
+  bgImage: "",
+  darkMode: true,
+  transparency: 100,
+  borderOpacity: true,
+  zoomLevel: 1,
+  cellSizePx: 30
+});
+// Define types for grid and gridOptions
+interface Grid {
+  width: number;
+  height: number;
+}
+
+interface GridOptions {
+  darkMode: boolean;
+  transparency: number;
+  noGrid: boolean;
+  borderOpacity: boolean;
+  zoomLevel: number;
+  cellSizePx: number;
+}
 function decodeMap(toDecode: string) {
   // Decode logic here
   //http://otfbm.io/25x33/@c160d/R17Mgy-Arak_Nadi/J31Mb-Tibur_Baeshara/K31M~53A5C5-Orin_Caelth/U15Mb-Umbra/N22Mb-Rakeas_the_quick/I30Mr-SC1/L32Mb-Dorran/*s5wp18/?a=2&bg=https://pencooks.net/seth/wp-content/uploads/maps/wildlands/forests/map-05.01-midnight-rainforest-no-grid.jpg
@@ -64,29 +92,15 @@ function decodeMap(toDecode: string) {
   //first we need to find grid size, find a number x number using regex
   const gridSizeRegex = /(\d+)x(\d+)/;
   const gridSizeMatch = gridSizeRegex.exec(toDecode);
-  // Define types for grid and gridOptions
-  interface Grid {
-    width: number;
-    height: number;
-  }
-
-  interface GridOptions {
-    darkMode: boolean;
-    transparency: number | null;
-    noGrid: boolean;
-    borderOpacity: boolean;
-    zoomLevel: number | null;
-    cellSizePx: number | null;
-  }
 
   let grid: Grid | null = null; // Initialize grid as null
   let gridOptions: GridOptions = {
     darkMode: false,
-    transparency: null,
+    transparency: 100,
     noGrid: false,
     borderOpacity: false,
-    zoomLevel: null,
-    cellSizePx: null,
+    zoomLevel: 1,
+    cellSizePx: 30,
   };
 
   // Check if gridSizeMatch exists
@@ -117,15 +131,15 @@ function decodeMap(toDecode: string) {
   gridOptions.darkMode = darkModeRegex.test(toDecode);
   gridOptions.transparency = transparencyRegex.test(toDecode)
     ? parseInt(transparencyRegex.exec(toDecode)?.[1] || "0", 10)
-    : null;
+    : 100;
   gridOptions.noGrid = noGridRegex.test(toDecode);
   gridOptions.borderOpacity = borderOpacityRegex.test(toDecode);
   gridOptions.zoomLevel = zoomLevelRegex.test(toDecode)
     ? parseInt(zoomLevelRegex.exec(toDecode)?.[1] || "0", 10)
-    : null;
+    : 1;
   gridOptions.cellSizePx = cellSizeRegex.test(toDecode)
     ? parseInt(cellSizeRegex.exec(toDecode)?.[1] || "0", 10)
-    : null;
+    : 30;
 
   // Remove matched options from the string
   toDecode = toDecode.replace(darkModeRegex, "");
@@ -255,13 +269,38 @@ function decodeMap(toDecode: string) {
     objects.push({ underlay: !!underlay, type, size, color, start, direction });
   }
 
-  //send everything to local storage
-  localStorage.setItem("grid", JSON.stringify(grid));
-  localStorage.setItem("gridOptions", JSON.stringify(gridOptions));
-  localStorage.setItem("bgImage", JSON.stringify(bgImage));
-  localStorage.setItem("fighters", JSON.stringify(fighters));
-  localStorage.setItem("objects", JSON.stringify(objects));
+  mapOptions.decoded = true;
+  mapOptions.grid = grid ?? { width: 0, height: 0 };
+  mapOptions.gridOptions = gridOptions;
+  mapOptions.bgImage = bgImage;
+  mapOptions.fighters = fighters;
+  mapOptions.objects = objects;
+
+  navigateTo('/map');
 }
+
+function generateNewMap() {
+  // Logic to generate a new map based on the options
+  const grid: Grid = {
+    width: generateNewOptions.value.width,
+    height: generateNewOptions.value.height
+  };
+
+  const gridOptions: GridOptions = {
+    darkMode: generateNewOptions.value.darkMode,
+    transparency: generateNewOptions.value.transparency,
+    noGrid: generateNewOptions.value.transparency === 0,
+    borderOpacity: generateNewOptions.value.borderOpacity,
+    zoomLevel: generateNewOptions.value.zoomLevel,
+    cellSizePx: generateNewOptions.value.cellSizePx
+  };
+  mapOptions.decoded = false;
+  mapOptions.grid = grid ?? {};
+  mapOptions.gridOptions = gridOptions;
+
+  navigateTo('/map');
+}
+
 </script>
 
 <style></style>
