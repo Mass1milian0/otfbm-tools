@@ -19,7 +19,11 @@ export const useMapStore = defineStore('mapStore', {
         noGrid: false,
         borderOpacity: false,
         zoomLevel: 1,
-        cellSizePx: 30
+        cellSizePx: 30,
+        panOptions: {
+            x: 0,
+            y: 0
+        }
     },
     bgImage: '' as string | null | undefined,
     fighters: [] as any,

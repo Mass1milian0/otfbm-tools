@@ -51,6 +51,7 @@
 <script lang="ts" setup>
 import type { AccordionItem } from '@nuxt/ui'
 const mapOptions = useMapStore();
+const tokenStore = useTokenStore();
 const items: AccordionItem[] = [
   {
     label: "Advanced Options",
@@ -81,6 +82,10 @@ interface GridOptions {
   borderOpacity: boolean;
   zoomLevel: number;
   cellSizePx: number;
+  panOptions?: {
+    x?: number;
+    y?: number;
+  };
 }
 function decodeMap(toDecode: string) {
   // Decode logic here
@@ -119,35 +124,37 @@ function decodeMap(toDecode: string) {
   // Clean up the string before applying regex
   toDecode = toDecode.replace(/^\//, ""); // Remove leading slash if present
 
-  // Regex for each grid option
-  const darkModeRegex = /@d/;
-  const transparencyRegex = /h(\d+)/;
-  const noGridRegex = /@n/;
-  const borderOpacityRegex = /@e/;
-  const zoomLevelRegex = /z(\d+)/;
-  const cellSizeRegex = /c(\d+)/;
-
-  // Extract and set each option in gridOptions
-  gridOptions.darkMode = darkModeRegex.test(toDecode);
-  gridOptions.transparency = transparencyRegex.test(toDecode)
-    ? parseInt(transparencyRegex.exec(toDecode)?.[1] || "0", 10)
-    : 100;
-  gridOptions.noGrid = noGridRegex.test(toDecode);
-  gridOptions.borderOpacity = borderOpacityRegex.test(toDecode);
-  gridOptions.zoomLevel = zoomLevelRegex.test(toDecode)
-    ? parseInt(zoomLevelRegex.exec(toDecode)?.[1] || "0", 10)
-    : 1;
-  gridOptions.cellSizePx = cellSizeRegex.test(toDecode)
-    ? parseInt(cellSizeRegex.exec(toDecode)?.[1] || "0", 10)
-    : 30;
-
+  // Parse grid options after '@' in any order
+  const gridOptionBlock = /@([a-zA-Z0-9]+)/.exec(toDecode)?.[1] || '';
+  const optionRegex = /([a-z])([0-9]*)/g;
+  let optMatch;
+  while ((optMatch = optionRegex.exec(gridOptionBlock)) !== null) {
+    const key = optMatch[1];
+    const value = optMatch[2];
+    switch (key) {
+      case 'd':
+        gridOptions.darkMode = true;
+        break;
+      case 'h':
+        gridOptions.transparency = value ? parseInt(value, 10) : 100;
+        break;
+      case 'n':
+        gridOptions.noGrid = true;
+        break;
+      case 'z':
+        gridOptions.zoomLevel = value ? parseInt(value, 10) : 1;
+        break;
+      case 'e':
+        gridOptions.borderOpacity = true;
+        break;
+      case 'c':
+        gridOptions.cellSizePx = value ? parseInt(value, 10) : 30;
+        break;
+      // Add more cases for other options as needed
+    }
+  }
   // Remove matched options from the string
-  toDecode = toDecode.replace(darkModeRegex, "");
-  toDecode = toDecode.replace(transparencyRegex, "");
-  toDecode = toDecode.replace(noGridRegex, "");
-  toDecode = toDecode.replace(borderOpacityRegex, "");
-  toDecode = toDecode.replace(zoomLevelRegex, "");
-  toDecode = toDecode.replace(cellSizeRegex, "");
+  toDecode = toDecode.replace(/@([a-zA-Z0-9]+)/, '');
 
   // Log the extracted grid options
   console.log("Grid Options:", gridOptions);
@@ -213,12 +220,12 @@ function decodeMap(toDecode: string) {
   const fighterRegex = /([A-Za-z]\d+)([tsmlhgc])(?:~([0-9A-Fa-f]{6})|([A-Za-z]{1,2}))?-(\S+?)(?=\/|\s|$)/gi;
   let match;
   while ((match = fighterRegex.exec(toDecode)) !== null) {
-    const [, coord, sizeRaw = 'm', hexColor, colorCodeRaw = '', name] = match;
+    const [, position, sizeRaw = 'm', hexColor, colorCodeRaw = '', label] = match;
     const size = sizeRaw.toLowerCase();
     const color = hexColor
       ? `#${hexColor}`
       : colorMap[colorCodeRaw.toLowerCase() as keyof typeof colorMap] || '#000000';
-    fighters.push({ coord, size, color, name });
+    fighters.push({ position: position ?? "A1", size, color, label: label ?? "Fighter" });
   }
 
   //remove any remaining fighter data from the string
@@ -232,8 +239,7 @@ function decodeMap(toDecode: string) {
     A top left centered circle: *ct circletop 10 diameter y color f2 center coordinate
     A bottom right of center circle: *co circlecorner 25 diameter g color h9 center coordinate for the ogre token
     cones: *t cone 30 length b color a5 start coordinate e5 direction coordinate, example: *t30ba5e5
-    lines: *l line 30 length ,5 width g color a1 start coordinate b2 direction coordinate, example: *l30,5ga1b2
-    
+    lines: *l line 30 length ,5 width g color a1 start coordinate b2 direction coordinate, example: *l30,5ga1b2a2
     squares: *s square 30 size c colour a1 start co-ordinate b2 direction co-ordinate
     Alternatively use *st to anchor the square at the top left. (Or don't specify the direction co-ordinate.)
   - with only <start>: draws an axis-aligned square anchored top-left at that coordinate
@@ -271,9 +277,10 @@ function decodeMap(toDecode: string) {
 
   mapOptions.decoded = true;
   mapOptions.grid = grid ?? { width: 0, height: 0 };
+  //@ts-ignore shut the fuck up typescript
   mapOptions.gridOptions = gridOptions;
   mapOptions.bgImage = bgImage;
-  mapOptions.fighters = fighters;
+  tokenStore.tokens = fighters;
   mapOptions.objects = objects;
 
   navigateTo('/map');
@@ -292,10 +299,11 @@ function generateNewMap() {
     noGrid: generateNewOptions.value.transparency === 0,
     borderOpacity: generateNewOptions.value.borderOpacity,
     zoomLevel: generateNewOptions.value.zoomLevel,
-    cellSizePx: generateNewOptions.value.cellSizePx
+    cellSizePx: generateNewOptions.value.cellSizePx,
   };
   mapOptions.decoded = false;
   mapOptions.grid = grid ?? {};
+  //@ts-ignore you too
   mapOptions.gridOptions = gridOptions;
 
   navigateTo('/map');
