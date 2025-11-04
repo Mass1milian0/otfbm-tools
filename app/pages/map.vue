@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="flex flex-col md:flex-row items-center md:items-start">
+        <div class="flex flex-col md:flex-row items-center justify-center md:items-start">
             <div class="max-w-72 max-h-72 md:max-h-[100rem] md:max-w-[100rem] mt-4 mr-2 flex flex-col items-center">
                 <h2 class="font-bold mb-2">map options</h2>
                 <p>zoom level (preview only)</p>
@@ -11,7 +11,7 @@
 
                 <p>cell size (px)</p>
                 <div class="flex w-xl">
-                    <USlider v-model="mapOptions.gridOptions.cellSizePx" :step="1" :min="1" :max="100"
+                    <USlider v-model="mapOptions.gridOptions.cellSizePx" :step="1" :min="20" :max="100"
                         @update:modelValue="handleImageLoad" />
                     <UInput v-model="mapOptions.gridOptions.cellSizePx" class="w-16 ml-2" @change="handleImageLoad" />
                 </div>
