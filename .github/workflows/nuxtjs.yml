@@ -1,4 +1,4 @@
-# Sample workflow for building and deploying a Nuxt site to GitHub Pages using Bun
+# Workflow for building and deploying a Nuxt site to GitHub Pages using Bun
 #
 # To get started with Nuxt see: https://nuxtjs.org/docs/get-started/installation
 # Bun install: https://bun.sh/docs/installation
@@ -43,9 +43,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            dist
+            .output
             .nuxt
-          key: ${{ runner.os }}-nuxt-build-${{ hashFiles('dist') }}
+          key: ${{ runner.os }}-nuxt-build-${{ hashFiles('.output') }}
           restore-keys: |
             ${{ runner.os }}-nuxt-build-
 
@@ -58,7 +58,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./.output/public
 
   deploy:
     environment:
