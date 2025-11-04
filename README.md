@@ -1,6 +1,6 @@
 # OTFBM Tools
 
-A modern web application for creating and managing [OTFBM](https://otfbm.io) (Online Tabletop Battle Map) links. Built with Nuxt 3, this tool provides an intuitive interface for generating grid-based battle maps for tabletop RPGs like D&D, Pathfinder, and more.
+A modern web application for creating and managing [OTFBM](https://otfbm.io) (Online Tabletop Battle Map) links. Built with Nuxt 3, this tool provides an intuitive interface for configuring grid-based battle maps for tabletop RPGs like D&D, Pathfinder, and more.
 
 ## About OTFBM
 
@@ -8,7 +8,7 @@ OTFBM (otfbm.io) is a service that generates battle map images from simple URL p
 
 ## Features
 
-- **🗺️ Interactive Map Generator:** Create custom battle maps with an intuitive visual interface
+- **🗺️ Map Configuration Tool:** Create OTFBM map URLs with an intuitive visual interface
 - **⚙️ Customizable Grid Options:**
   - Adjustable grid size (width × height)
   - Custom background images via URL
