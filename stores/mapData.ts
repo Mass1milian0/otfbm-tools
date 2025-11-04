@@ -21,8 +21,8 @@ export const useMapStore = defineStore('mapStore', {
         zoomLevel: 1,
         cellSizePx: 30,
         panOptions: {
-            x: 0,
-            y: 0
+            panStart: "",
+            panEnd: ""
         }
     },
     bgImage: '' as string | null | undefined,
