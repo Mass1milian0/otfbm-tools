@@ -69,7 +69,7 @@
                             @mousedown="onMouseDown" @mousemove="onMouseMove" @mouseup="onMouseUp"
                             @mouseleave="onMouseLeave">
                             <div v-for="i in mapOptions.grid.width * mapOptions.grid.height" :key="i" :id="getCellId(i)"
-                                ref="gridRefArray" class="border border-white border-t-0 border-l-0 cell">
+                                ref="gridRefArray" class="border border-t-0 border-l-0 cell">
                             </div>
                         </div>
                     </div>
@@ -90,6 +90,7 @@ const gridRefArray = ref<HTMLElement[]>([])
 const isExporting = ref(false)
 
 const mapLink = computed(() => encode())
+const transparency = computed(() => mapOptions.gridOptions.transparency / 100)
 const exportText = ref<string>('')
 
 /* selection / pan */
@@ -263,7 +264,7 @@ function encodeOptions() {
 
     const ps = mapOptions.gridOptions.panOptions.panStart
     const pe = mapOptions.gridOptions.panOptions.panEnd
-    if (ps && pe) options += `${ps}:${pe}`
+    if (ps && pe) options += `/${ps}:${pe}`
 
     return options
 }
@@ -283,12 +284,15 @@ function copyToClipboard() {
 
 
 
-<style>
+<style scoped>
 .selection-rect {
     border: 2px dashed rgba(255, 255, 0, 0.9);
-    background: rgba(255, 255, 0, 0.2);
+    background: rgba(73, 73, 43, 0.2);
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
     pointer-events: none;
     border-radius: 2px;
+}
+.cell {
+    border-color: rgba(255, 255, 255, v-bind(transparency));
 }
 </style>
