@@ -6,6 +6,8 @@ export default defineNuxtConfig({
   css: ['./public/styles/main.css'],
   pinia: {
     storesDirs: ['./stores']
+  },
+  app: {
+    baseURL: process.env.NODE_ENV === "development" ? "/" : "/otfbm-tools/"
   }
-  
 })
