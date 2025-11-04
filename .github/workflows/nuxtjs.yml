@@ -9,14 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: corepack enable
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v1  # Setup Bun instead of Node
         with:
-          node-version: "20"
-      # Pick your own package manager and build script
-      - run: npm install
-      - run: NUXT_APP_BASE_URL=/otfbm-tools/
-      - run: npx nuxt build --preset github_pages
+          bun-version: latest
+      # Use Bun commands instead of npm
+      - run: bun install
+      - run: NUXT_APP_BASE_URL=/otfbm-tools/ bun run nuxt build --preset github_pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
