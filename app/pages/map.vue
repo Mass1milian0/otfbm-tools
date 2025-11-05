@@ -1,46 +1,46 @@
 <template>
     <div>
         <div class="flex flex-col md:flex-row items-center justify-center md:items-start">
-            <div class="max-w-72 max-h-72 md:max-h-[100rem] md:max-w-[100rem] mt-4 mr-2 flex flex-col items-center">
+            <div class="max-w-72 mt-4 mr-2 flex flex-col items-center">
                 <h2 class="font-bold mb-2">map options</h2>
                 <p>zoom level (preview only)</p>
-                <div class="flex w-xl">
+                <div class="flex md:w-xl w-xs">
                     <USlider v-model="mapOptions.gridOptions.zoomLevel" :step="0.1" :min="0.1" :max="3" />
                     <UInput v-model="mapOptions.gridOptions.zoomLevel" class="w-16 ml-2" />
                 </div>
 
                 <p>cell size (px)</p>
-                <div class="flex w-xl">
+                <div class="flex md:w-xl w-xs">
                     <USlider v-model="mapOptions.gridOptions.cellSizePx" :step="1" :min="20" :max="100"
                         @update:modelValue="handleImageLoad" />
                     <UInput v-model="mapOptions.gridOptions.cellSizePx" class="w-16 ml-2" @change="handleImageLoad" />
                 </div>
 
                 <p>grid transparency</p>
-                <div class="flex w-xl">
+                <div class="flex md:w-xl w-xs">
                     <USlider v-model="mapOptions.gridOptions.transparency" :step="1" :min="0" :max="100"
                         @update:modelValue="handleImageLoad" />
                     <UInput v-model="mapOptions.gridOptions.transparency" class="w-16 ml-2" @change="handleImageLoad" />
                 </div>
 
                 <p>grid size</p>
-                <div class="flex w-xl">
+                <div class="flex md:w-xl w-xs">
                     <USlider v-model="mapOptions.grid.width" :step="1" :min="1" :max="100"
                         @update:modelValue="handleImageLoad" />
                     <UInput v-model="mapOptions.grid.width" class="w-16 ml-2" @change="handleImageLoad" />
                 </div>
-                <div class="flex w-xl">
+                <div class="flex md:w-xl w-xs">
                     <USlider v-model="mapOptions.grid.height" :step="1" :min="1" :max="100"
                         @update:modelValue="handleImageLoad" />
                     <UInput v-model="mapOptions.grid.height" class="w-16 ml-2" @change="handleImageLoad" />
                 </div>
 
-                <div class="flex mt-4 space-x-2">
+                <div class="md:flex mt-4 space-x-2 hidden">
                     <UButton @click="startPanMode">start pan</UButton>
                     <UButton @click="clearPan" variant="outline">clear pan</UButton>
                 </div>
                 <UModal title="Export Map" @close="isExporting = false">
-                    <UButton color="secondary" class="w-xl mt-2 flex items-center justify-center font-bold text" @click="exportCommand">Export</UButton>
+                    <UButton color="secondary" class="md:w-xl w-xs mt-2 flex items-center justify-center font-bold text" @click="exportCommand">Export</UButton>
                     <template #content>
                         <div class="flex flex-col items-center m-4">
                             <h1>Your Map Settings</h1>
@@ -50,8 +50,15 @@
                     </template>
                 </UModal>
 
-                <h2 class="font-bold my-2">map preview</h2>
-                <img :src="mapLink" alt="" class="max-w-xl" />
+                <h2 class="font-bold my-2 hidden md:block">map preview</h2>
+                <img :src="mapLink" alt="" class="max-w-xl hidden md:block" />
+                <UAccordion class="md:hidden block max-w-xs border-2 rounded-2xl border-slate-700 px-2 my-2" :items="[{label:'Map Preview'}]">
+                    <template #body="{ item }"> 
+                        <div class="max-w-xs overflow-scroll">
+                            <img :src="mapLink" alt="" class="" />
+                        </div>
+                    </template>
+                </UAccordion>
             </div>
 
             <div class="max-w-72 max-h-72 md:max-h-none md:max-w-none md:h-[60rem] md:w-[60rem] mt-4 overflow-scroll pointer-events-none select-none">
