@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="flex flex-col md:flex-row items-center justify-center md:items-start">
-            <div class="max-w-72 mt-4 mr-2 flex flex-col items-center">
+            <div class="mt-4 mr-2 flex flex-col items-center">
                 <h2 class="font-bold mb-2">map options</h2>
                 <p>zoom level (preview only)</p>
                 <div class="flex md:w-xl w-xs">
