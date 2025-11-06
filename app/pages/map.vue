@@ -36,8 +36,8 @@
                 </div>
 
                 <div class="md:flex mt-4 space-x-2 hidden">
-                    <UButton @click="startPanMode">start pan</UButton>
-                    <UButton @click="clearPan" variant="outline">clear pan</UButton>
+                    <UButton @click="startPanMode">Draw View</UButton>
+                    <UButton @click="clearPan" variant="outline">Clear View</UButton>
                 </div>
                 <UModal title="Export Map" @close="isExporting = false">
                     <UButton color="secondary" class="md:w-xl w-xs mt-2 flex items-center justify-center font-bold text" @click="exportCommand">Export</UButton>
