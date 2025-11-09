@@ -34,13 +34,17 @@
                         @update:modelValue="handleImageLoad" />
                     <UInput v-model="mapOptions.grid.height" class="w-16 ml-2" @change="handleImageLoad" />
                 </div>
+                <UButton class="mt-2" :color="autoGridEnabled ? 'primary' : 'neutral'" @click="toggleAutoGrid">
+                    {{ autoGridEnabled ? 'Auto Grid: ON' : 'Auto Grid: OFF' }}
+                </UButton>
 
                 <div class="md:flex mt-4 space-x-2 hidden">
                     <UButton @click="startPanMode">Draw View</UButton>
                     <UButton @click="clearPan" variant="outline">Clear View</UButton>
                 </div>
                 <UModal title="Export Map" @close="isExporting = false">
-                    <UButton color="secondary" class="md:w-xl w-xs mt-2 flex items-center justify-center font-bold text" @click="exportCommand">Export</UButton>
+                    <UButton color="secondary" class="md:w-xl w-xs mt-2 flex items-center justify-center font-bold text"
+                        @click="exportCommand">Export</UButton>
                     <template #content>
                         <div class="flex flex-col items-center m-4">
                             <h1>Your Map Settings</h1>
@@ -52,8 +56,9 @@
 
                 <h2 class="font-bold my-2 hidden md:block">map preview</h2>
                 <img :src="mapLink" alt="" class="max-w-xl hidden md:block" />
-                <UAccordion class="md:hidden block max-w-xs border-2 rounded-2xl border-slate-700 px-2 my-2" :items="[{label:'Map Preview'}]">
-                    <template #body="{ item }"> 
+                <UAccordion class="md:hidden block max-w-xs border-2 rounded-2xl border-slate-700 px-2 my-2"
+                    :items="[{ label: 'Map Preview' }]">
+                    <template #body="{ item }">
                         <div class="max-w-xs overflow-scroll">
                             <img :src="mapLink" alt="" class="" />
                         </div>
@@ -61,7 +66,8 @@
                 </UAccordion>
             </div>
 
-            <div class="max-w-72 max-h-72 md:max-h-none md:max-w-none md:h-[60rem] md:w-[60rem] mt-4 overflow-scroll pointer-events-none select-none">
+            <div
+                class="max-w-72 max-h-72 md:max-h-none md:max-w-none md:h-[60rem] md:w-[60rem] mt-4 overflow-scroll pointer-events-none select-none">
                 <div class="relative inline-block">
                     <img :src="mapOptions.bgImage || ''" alt="" @load="handleImageLoad" ref="mapRef"
                         class="block max-w-none w-auto h-auto" />
@@ -99,6 +105,10 @@ const isExporting = ref(false)
 const mapLink = computed(() => encode())
 const transparency = computed(() => mapOptions.gridOptions.transparency / 100)
 const exportText = ref<string>('')
+const mapRef = useTemplateRef('mapRef')
+const autoGridEnabled = ref(false)
+let autoGridTimeout: number | null = null
+let rafId: number | null = null
 
 /* selection / pan */
 const isPanning = ref(false)
@@ -227,7 +237,56 @@ function finishSelection(endCell: { col: number; row: number }) {
     isPanning.value = false
 }
 
+function toggleAutoGrid() {
+    autoGridEnabled.value = !autoGridEnabled.value
+    if (autoGridEnabled.value) {
+        autoGrid()
+        const totalCells = mapOptions.grid.width * mapOptions.grid.height
+        toast.add({
+            title: 'Performance Warning',
+            description: `Auto Grid enabled when grid size is large you may experience lag.`,
+            icon: 'mdi:alert-circle-outline',
+            color: 'warning',
+        })
+    }
+}
+
+watch(() => mapOptions.gridOptions.cellSizePx, () => {
+    if (!autoGridEnabled.value) return
+    if (rafId) cancelAnimationFrame(rafId)
+    rafId = requestAnimationFrame(autoGrid)
+})
+
+function autoGrid() {
+    if (!mapRef.value) return
+
+    const width = mapRef.value.naturalWidth || mapRef.value.width
+    const height = mapRef.value.naturalHeight || mapRef.value.height
+    const cell = mapOptions.gridOptions.cellSizePx
+    const cols = Math.floor(width / cell)
+    const rows = Math.floor(height / cell)
+
+    if (cols === mapOptions.grid.width && rows === mapOptions.grid.height) return
+
+    mapOptions.grid.width = cols
+    mapOptions.grid.height = rows
+
+    updateGridLayout()
+}
+
+
+
+
 /* grid generation */
+
+function updateGridLayout() {
+    const cell = mapOptions.gridOptions.cellSizePx
+    detectorRef.value!.style.gridTemplateColumns = `repeat(${mapOptions.grid.width}, ${cell}px)`
+    detectorRef.value!.style.gridTemplateRows = `repeat(${mapOptions.grid.height}, ${cell}px)`
+    detectorRef.value!.style.width = `${cell * mapOptions.grid.width}px`
+    detectorRef.value!.style.height = `${cell * mapOptions.grid.height}px`
+}
+
 let handleImageLoad: any
 onMounted(() => {
     handleImageLoad = async () => {
@@ -299,6 +358,7 @@ function copyToClipboard() {
     pointer-events: none;
     border-radius: 2px;
 }
+
 .cell {
     border-color: rgba(255, 255, 255, v-bind(transparency));
 }
