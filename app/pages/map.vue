@@ -325,8 +325,8 @@ function encodeOptions() {
     if (mapOptions.gridOptions.transparency != null) options += `h${mapOptions.gridOptions.transparency}`
     if (mapOptions.gridOptions.noGrid) options += 'n'
     if (mapOptions.gridOptions.borderOpacity) options += 'e'
-    if (mapOptions.gridOptions.zoomLevel != null) options += `z${mapOptions.gridOptions.zoomLevel}`
     if (mapOptions.gridOptions.cellSizePx != null) options += `c${mapOptions.gridOptions.cellSizePx}`
+    if (mapOptions.gridOptions.zoomLevel != null) options += `z${mapOptions.gridOptions.zoomLevel}`
 
     const ps = mapOptions.gridOptions.panOptions.panStart
     const pe = mapOptions.gridOptions.panOptions.panEnd
