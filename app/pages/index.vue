@@ -58,7 +58,7 @@ let generateNewOptions = ref({
   height: 30,
   bgImage: "",
   darkMode: true,
-  transparency: 100,
+  transparency: 50,
   borderOpacity: true,
   zoomLevel: 1,
   cellSizePx: 30
