@@ -26,12 +26,12 @@
                     <p>grid size</p>
                 </div>
                 <div class="flex md:w-xl w-xs">
-                    <USlider v-model="mapOptions.grid.width" :step="1" :min="1" :max="100"
+                    <USlider v-model="mapOptions.grid.width" :step="1" :min="1" :max="99"
                         @update:modelValue="handleImageLoad" />
                     <UInput v-model="mapOptions.grid.width" class="w-16 ml-2" type="number" @change="handleImageLoad" />
                 </div>
                 <div class="flex md:w-xl w-xs">
-                    <USlider v-model="mapOptions.grid.height" :step="1" :min="1" :max="100"
+                    <USlider v-model="mapOptions.grid.height" :step="1" :min="1" :max="99"
                         @update:modelValue="handleImageLoad" />
                     <UInput v-model="mapOptions.grid.height" class="w-16 ml-2" type="number" @change="handleImageLoad" />
                 </div>
@@ -261,42 +261,46 @@ watch(() => mapOptions.gridOptions.cellSizePx, () => {
 })
 
 function autoGrid() {
-    if (!mapRef.value) return
+    if (!mapRef.value) return;
     if (mapOptions.gridOptions.cellSizePx < 10) {
         toast.add({
             title: 'Auto Grid Disabled',
             description: 'Cell size too small for Auto Grid to function properly.',
             icon: 'mdi:alert-circle-outline',
             color: 'warning',
-        })
-        return
+        });
+        return;
     }
 
-    const width = mapRef.value.naturalWidth || mapRef.value.width
-    const height = mapRef.value.naturalHeight || mapRef.value.height
-    const cell = mapOptions.gridOptions.cellSizePx
-    const cols = Math.floor(width / cell)
-    const rows = Math.floor(height / cell)
+    const width = mapRef.value.naturalWidth || mapRef.value.width;
+    const height = mapRef.value.naturalHeight || mapRef.value.height;
+    const cell = mapOptions.gridOptions.cellSizePx;
+    let cols = Math.floor(width / cell);
+    let rows = Math.floor(height / cell);
 
-    if (cols === mapOptions.grid.width && rows === mapOptions.grid.height) return
+    // Clamp rows and columns to a maximum of 99
+    cols = clamp(cols, 1, 99);
+    rows = clamp(rows, 1, 99);
 
-    mapOptions.grid.width = cols
-    mapOptions.grid.height = rows
+    if (cols === mapOptions.grid.width && rows === mapOptions.grid.height) return;
 
-    updateGridLayout()
+    mapOptions.grid.width = cols;
+    mapOptions.grid.height = rows;
+
+    updateGridLayout();
 }
 
-
-
-
-/* grid generation */
-
 function updateGridLayout() {
-    const cell = mapOptions.gridOptions.cellSizePx
-    detectorRef.value!.style.gridTemplateColumns = `repeat(${mapOptions.grid.width}, ${cell}px)`
-    detectorRef.value!.style.gridTemplateRows = `repeat(${mapOptions.grid.height}, ${cell}px)`
-    detectorRef.value!.style.width = `${cell * mapOptions.grid.width}px`
-    detectorRef.value!.style.height = `${cell * mapOptions.grid.height}px`
+    const cell = mapOptions.gridOptions.cellSizePx;
+
+    // Clamp grid dimensions to a maximum of 99
+    mapOptions.grid.width = clamp(mapOptions.grid.width, 1, 99);
+    mapOptions.grid.height = clamp(mapOptions.grid.height, 1, 99);
+
+    detectorRef.value!.style.gridTemplateColumns = `repeat(${mapOptions.grid.width}, ${cell}px)`;
+    detectorRef.value!.style.gridTemplateRows = `repeat(${mapOptions.grid.height}, ${cell}px)`;
+    detectorRef.value!.style.width = `${cell * mapOptions.grid.width}px`;
+    detectorRef.value!.style.height = `${cell * mapOptions.grid.height}px`;
 }
 
 let handleImageLoad: any
