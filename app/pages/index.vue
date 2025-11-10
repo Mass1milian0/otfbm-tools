@@ -12,9 +12,9 @@
               <UInput v-model="generateNewOptions.bgImage" @keydown.enter="generateNewMap" placeholder="Image URL" />
               <p>Grid Size</p>
               <div class="flex">
-                <UInput v-model="generateNewOptions.width" placeholder="Width" class="w-10" />
+                <UInput v-model="generateNewOptions.width" placeholder="Width" class="w-10" type="number" :max="99" />
                 x
-                <UInput v-model="generateNewOptions.height" placeholder="Height" class="w-10" />
+                <UInput v-model="generateNewOptions.height" placeholder="Height" class="w-10" type="number" :max="99" />
               </div>
               <div class="flex items-center space-x-2 mt-2">
                 <p>Dark Mode</p>
@@ -81,11 +81,15 @@ interface GridOptions {
     y?: number;
   };
 }
+function clamp(v: number, lo: number, hi: number) {
+  return Math.max(lo, Math.min(hi, v));
+}
+
 function generateNewMap() {
   // Logic to generate a new map based on the options
   const grid: Grid = {
-    width: generateNewOptions.value.width,
-    height: generateNewOptions.value.height
+    width: clamp(generateNewOptions.value.width, 1, 99),
+    height: clamp(generateNewOptions.value.height, 1, 99),
   };
 
   const gridOptions: GridOptions = {
