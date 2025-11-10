@@ -6,37 +6,42 @@
                 <p>zoom level (preview only)</p>
                 <div class="flex md:w-xl w-xs">
                     <USlider v-model="mapOptions.gridOptions.zoomLevel" :step="0.1" :min="0.1" :max="3" />
-                    <UInput v-model="mapOptions.gridOptions.zoomLevel" class="w-16 ml-2" />
+                    <UInput v-model="mapOptions.gridOptions.zoomLevel" class="w-16 ml-2" type="number" />
                 </div>
 
                 <p>cell size (px)</p>
                 <div class="flex md:w-xl w-xs">
                     <USlider v-model="mapOptions.gridOptions.cellSizePx" :step="1" :min="20" :max="100"
                         @update:modelValue="handleImageLoad" />
-                    <UInput v-model="mapOptions.gridOptions.cellSizePx" class="w-16 ml-2" @change="handleImageLoad" />
+                    <UInput v-model="mapOptions.gridOptions.cellSizePx" class="w-16 ml-2" type="number" @change="handleImageLoad" />
                 </div>
 
                 <p>grid transparency</p>
                 <div class="flex md:w-xl w-xs">
                     <USlider v-model="mapOptions.gridOptions.transparency" :step="1" :min="0" :max="100"
                         @update:modelValue="handleImageLoad" />
-                    <UInput v-model="mapOptions.gridOptions.transparency" class="w-16 ml-2" @change="handleImageLoad" />
+                    <UInput v-model="mapOptions.gridOptions.transparency" class="w-16 ml-2" type="number" @change="handleImageLoad" />
                 </div>
 
                 <p>grid size</p>
                 <div class="flex md:w-xl w-xs">
                     <USlider v-model="mapOptions.grid.width" :step="1" :min="1" :max="100"
                         @update:modelValue="handleImageLoad" />
-                    <UInput v-model="mapOptions.grid.width" class="w-16 ml-2" @change="handleImageLoad" />
+                    <UInput v-model="mapOptions.grid.width" class="w-16 ml-2" type="number" @change="handleImageLoad" />
                 </div>
                 <div class="flex md:w-xl w-xs">
                     <USlider v-model="mapOptions.grid.height" :step="1" :min="1" :max="100"
                         @update:modelValue="handleImageLoad" />
-                    <UInput v-model="mapOptions.grid.height" class="w-16 ml-2" @change="handleImageLoad" />
+                    <UInput v-model="mapOptions.grid.height" class="w-16 ml-2" type="number" @change="handleImageLoad" />
                 </div>
-                <UButton class="mt-2" :color="autoGridEnabled ? 'primary' : 'neutral'" @click="toggleAutoGrid">
-                    {{ autoGridEnabled ? 'Auto Grid: ON' : 'Auto Grid: OFF' }}
-                </UButton>
+                <div class="flex justify-center-center md:flex-row flex-col mt-2 gap-2">
+                    <UButton :color="autoGridEnabled ? 'primary' : 'neutral'" @click="toggleAutoGrid">
+                        {{ autoGridEnabled ? 'Auto Grid: ON' : 'Auto Grid: OFF' }}
+                    </UButton>
+                    <UButton color="primary" @click="autoGrid">
+                        Update Grid to Cell Size
+                    </UButton>
+                </div>
 
                 <div class="md:flex mt-4 space-x-2 hidden">
                     <UButton @click="startPanMode">Draw View</UButton>
@@ -259,6 +264,15 @@ watch(() => mapOptions.gridOptions.cellSizePx, () => {
 
 function autoGrid() {
     if (!mapRef.value) return
+    if (mapOptions.gridOptions.cellSizePx < 10) {
+        toast.add({
+            title: 'Auto Grid Disabled',
+            description: 'Cell size too small for Auto Grid to function properly.',
+            icon: 'mdi:alert-circle-outline',
+            color: 'warning',
+        })
+        return
+    }
 
     const width = mapRef.value.naturalWidth || mapRef.value.width
     const height = mapRef.value.naturalHeight || mapRef.value.height
