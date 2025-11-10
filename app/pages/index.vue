@@ -9,7 +9,7 @@
             <div class="flex flex-col items-center">
               <h1 class="font-bold mb-3">Initial Settings</h1>
               <p class="mt-2">Background Image URL</p>
-              <UInput v-model="generateNewOptions.bgImage" placeholder="Image URL" />
+              <UInput v-model="generateNewOptions.bgImage" @keydown.enter="generateNewMap" placeholder="Image URL" />
               <p>Grid Size</p>
               <div class="flex">
                 <UInput v-model="generateNewOptions.width" placeholder="Width" class="w-10" />
