@@ -22,8 +22,9 @@
                         @update:modelValue="handleImageLoad" />
                     <UInput v-model="mapOptions.gridOptions.transparency" class="w-16 ml-2" type="number" @change="handleImageLoad" />
                 </div>
-
-                <p>grid size</p>
+                <div>
+                    <p>grid size</p>
+                </div>
                 <div class="flex md:w-xl w-xs">
                     <USlider v-model="mapOptions.grid.width" :step="1" :min="1" :max="100"
                         @update:modelValue="handleImageLoad" />
@@ -34,10 +35,8 @@
                         @update:modelValue="handleImageLoad" />
                     <UInput v-model="mapOptions.grid.height" class="w-16 ml-2" type="number" @change="handleImageLoad" />
                 </div>
-                <div class="flex justify-center-center md:flex-row flex-col mt-2 gap-2">
-                    <UButton :color="autoGridEnabled ? 'primary' : 'neutral'" @click="toggleAutoGrid">
-                        {{ autoGridEnabled ? 'Auto Grid: ON' : 'Auto Grid: OFF' }}
-                    </UButton>
+                <div class="flex justify-center items-center md:flex-row flex-col mt-2 gap-2">
+                    <USwitch label="Auto Grid" class="flex justify-center-center" v-model="autoGridEnabled" @click="toggleAutoGrid" />
                     <UButton color="primary" @click="autoGrid">
                         Update Grid to Cell Size
                     </UButton>
@@ -243,7 +242,6 @@ function finishSelection(endCell: { col: number; row: number }) {
 }
 
 function toggleAutoGrid() {
-    autoGridEnabled.value = !autoGridEnabled.value
     if (autoGridEnabled.value) {
         autoGrid()
         const totalCells = mapOptions.grid.width * mapOptions.grid.height
