@@ -8,14 +8,14 @@
           <template #content>
             <div class="flex flex-col items-center">
               <h1 class="font-bold mb-3">Initial Settings</h1>
+              <p class="mt-2">Background Image URL</p>
+              <UInput v-model="generateNewOptions.bgImage" placeholder="Image URL" />
               <p>Grid Size</p>
               <div class="flex">
                 <UInput v-model="generateNewOptions.width" placeholder="Width" class="w-10" />
                 x
                 <UInput v-model="generateNewOptions.height" placeholder="Height" class="w-10" />
               </div>
-              <p class="mt-2">Background Image URL</p>
-              <UInput v-model="generateNewOptions.bgImage" placeholder="Image URL" />
               <div class="flex items-center space-x-2 mt-2">
                 <p>Dark Mode</p>
                 <UCheckbox v-model="generateNewOptions.darkMode" />
