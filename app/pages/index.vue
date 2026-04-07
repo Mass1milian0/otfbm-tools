@@ -12,9 +12,9 @@
               <UInput v-model="generateNewOptions.bgImage" @keydown.enter="generateNewMap" placeholder="Image URL" />
               <p>Grid Size</p>
               <div class="flex">
-                <UInput v-model="generateNewOptions.width" placeholder="Width" class="w-10" type="number" :max="99" />
+                <UInput v-model="generateNewOptions.width" placeholder="Width" class="w-9 appearance-none" type="number" :max="99" />
                 x
-                <UInput v-model="generateNewOptions.height" placeholder="Height" class="w-10" type="number" :max="99" />
+                <UInput v-model="generateNewOptions.height" placeholder="Height" class="w-9 appearance-none" type="number" :max="99" />
               </div>
               <div class="flex items-center space-x-2 mt-2">
                 <p>Dark Mode</p>
@@ -61,7 +61,7 @@ let generateNewOptions = ref({
   transparency: 50,
   borderOpacity: true,
   zoomLevel: 1,
-  cellSizePx: 30
+  cellSizePx: 40
 });
 // Define types for grid and gridOptions
 interface Grid {

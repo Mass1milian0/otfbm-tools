@@ -242,15 +242,17 @@ function finishSelection(endCell: { col: number; row: number }) {
 }
 
 function toggleAutoGrid() {
-    if (autoGridEnabled.value) {
+    if (!autoGridEnabled.value) {
         autoGrid()
         const totalCells = mapOptions.grid.width * mapOptions.grid.height
-        toast.add({
-            title: 'Performance Warning',
-            description: `Auto Grid enabled when grid size is large you may experience lag.`,
-            icon: 'mdi:alert-circle-outline',
-            color: 'warning',
-        })
+        if (totalCells > 100) {
+            toast.add({
+                title: 'Performance Warning',
+                description: `Auto Grid enabled when grid size is large you may experience lag.`,
+                icon: 'mdi:alert-circle-outline',
+                color: 'warning',
+            })
+        }
     }
 }
 
