@@ -9,5 +9,6 @@ export default defineNuxtConfig({
   },
   app: {
     baseURL: process.env.NODE_ENV === "development" ? "/" : "/otfbm-tools/"
-  }
+  },
+  ssr: false
 })
