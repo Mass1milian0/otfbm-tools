@@ -99,8 +99,6 @@ otfbm-tools/
 │   │   ├── index.vue      # Home page with map generator
 │   │   └── map.vue        # Map viewer and editor
 │   └── app.vue            # Root component
-├── stores/
-│   └── mapData.ts         # Pinia store for map state management
 ├── public/
 │   └── styles/
 │       └── main.css       # Global styles
