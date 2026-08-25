@@ -53,7 +53,10 @@
                         <div class="flex flex-col items-center m-4">
                             <h1>Your Map Settings</h1>
                             <UInput v-model="exportText" class="w-72 mb-2" readonly />
-                            <UButton @click="copyToClipboard" color="primary">Copy to Clipboard</UButton>
+                            <div>
+                                <UButton @click="copyToClipboard" color="primary">Copy to Clipboard</UButton>
+                                <NuxtLink to="/" class="ml-2 text-slate-900 text-md bg-indigo-900 rounded-md p-2 ">Make a new map</NuxtLink>
+                            </div>
                         </div>
                     </template>
                 </UModal>
